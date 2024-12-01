@@ -5,6 +5,7 @@ import html from './index.html'
 const app = new Hono()
 let defaultReadingTime=238;
 
+app.use(cors())
 app.get('/', (c) => {
 return c.html(html) 
 });
