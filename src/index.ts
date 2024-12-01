@@ -1,9 +1,13 @@
-import { Hono } from 'hono'
+import { Hono } from 'hono';
+import {cors} from "hono/cors";
 import { calculatereadingTime } from './utils'
+import html from './index.html' 
 const app = new Hono()
 let defaultReadingTime=238;
 
-
+app.get('/', (c) => {
+return c.html(html) 
+});
 app.get('/status', (c) => {
 return c.json({status:"api is active"})
 });
@@ -23,7 +27,15 @@ app.get('/api/calculate', (c) => {
  }
 
  const readingTime = calculatereadingTime(sentence,Number(wpm) || defaultReadingTime);
- return c.json({readingTime});            
+ return c.json(readingTime);            
 })
-
+app.post("/api/calculate", async(c) => {
+  const {sentence, wpm} = await c.req.json();
+  if (!sentence) {
+    return c.text('Please provide a sentence', 400)
+  }
+  const readingTime = calculatereadingTime(sentence, Number(wpm) || defaultReadingTime)
+  return c.json(readingTime)
+})
+ 
 export default app
